@@ -1,4 +1,7 @@
 <?php
+/**
+ * Security function to prevent HTML injections.
+ */
 
 // We use this function to check the data and make it secure.
 function escape($string){

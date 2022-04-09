@@ -1,4 +1,8 @@
 <?php
+/**
+ * Initialization file with global variables.
+ */
+
 session_start(); // Starting the session.
 
 $GLOBALS['config'] = array(

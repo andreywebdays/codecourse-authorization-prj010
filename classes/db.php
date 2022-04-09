@@ -1,4 +1,8 @@
 <?php
+/**
+ * DB connection and actions.
+ */
+
 class DB{
     private static $_instance = null;
     private $_pdo,

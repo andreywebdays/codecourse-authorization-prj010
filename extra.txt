@@ -1,9 +1,0 @@
-For the database structure:
-
-Your id column should also always have the UNSIGNED attribute so you don't lose half of your storage space for that column to negative indexes. For example your never going to increment to -1 or -255 so why allocate half your row to negative numbers.
-
-For files security:
-
-1 - You could put your file away from your source code. If you use XAMPP, put your init.php outside your website folder.
-
-2 - You could protect your init.php with a .htaccess if you can't put your file outside of your source code. 

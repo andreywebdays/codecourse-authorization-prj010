@@ -1,4 +1,8 @@
 <?php
+/**
+ * Configuration helper class.
+ */
+
 class Config{
     public static function get($path = null){
         if($path){
