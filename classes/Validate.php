@@ -16,7 +16,8 @@ class Validate{
         foreach($items as $item => $rules){
             foreach($rules as $rule => $rule_value){
                 // echo "{$item} {$rule} must be {$rule_value}<br>";
-                $value = $source[$item];
+                $value = trim($source[$item]);
+                $item = escape($item);
                 // echo $value . '<br>';
 
                 if($rule === 'required' && empty($value)){
@@ -24,12 +25,25 @@ class Validate{
                 }else if(!empty($value)){
                     switch($rule){
                         case 'min':
+                            if(strlen($value) < $rule_value){
+                                $this->addError("{$item} must be a minimum of {$rule_value} character.");
+                            }
                             break;
-                        case 'min':
+                        case 'max':
+                            if(strlen($value) > $rule_value){
+                                $this->addError("{$item} must be a maximum of {$rule_value} character.");
+                            }
                             break;
-                        case 'min':
+                        case 'matches':
+                            if($value != $source[$rule_value]){
+                                $this->addError("{$rule_value} must match {$item}.");
+                            }
                             break; 
-                        case 'min':
+                        case 'unique':
+                            $check = $this->_db->get($rule_value, array($item, '=', $value));
+                            if($check->count()){
+                                $this->addError("{$item} already exists.");
+                            }
                             break;    
                     }
                 }

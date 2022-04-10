@@ -17,7 +17,8 @@ $GLOBALS['config'] = array(
         'cookie_expiry' => 604800 // We need to use seconds here. 604800 seconds equals 1 week. Just go to google and search how long in seconds is day, week, or month, etc.
     ), // Cookie name, cookie expiration data if we want to know for holng users can be remembered for if they check that little box on the login page.
     'session' => array(
-        'session_name' => 'user'
+        'session_name' => 'user',
+        'token_name' => 'token'
     ) // Session name and the token we use.
 );
 
@@ -35,3 +36,14 @@ spl_autoload_register(function($class){
 
 // This one we inclued separately because it is stored in different folder.
 require_once 'functions/sanitize.php';
+
+// Check if the user has cookie stored.
+if(Cookie::exists(Config::get('remember/cookie_name')) && !Session::exists(Config::get('session/session_name'))){
+    // echo 'User asked to be remembered.';
+    echo $hash = Cookie::get(Config::get('remember/cookie_name'));
+    $hashCheck = DB::getInstance()->get('users_session', array('hash', '=', $hash));
+
+    if($hashCheck->count()){
+        echo 'Hash matches, log user in.';
+    }
+}

@@ -55,9 +55,33 @@ require_once 'core/init.php';
 //     // Success
 // }
 
-$userUpdate = DB::getInstance()->update('users', 1, array(
-    'password' => 'newpassword',
-    'name' => 'Gloria'
-));
+// $userUpdate = DB::getInstance()->update('users', 1, array(
+//     'password' => 'newpassword',
+//     'name' => 'Gloria'
+// ));
 
 // $userUpdate = DB::getInstance()->query("UPDATE users SET password = 'newpassword2', name = 'Gloria2' WHERE id = 1");
+
+if(Session::exists('home')){
+    echo '<p>' . Session::flash('home') . '</p>';
+}
+
+// echo Session::get(Config::get('session/session_name'));
+
+$user = new User();
+// echo $user->data()->username;
+
+if($user->isLoggedIn()){
+    // echo 'Logged in';
+    ?>
+        <p>Hello <a href="#"><?php echo escape($user->data()->username); ?></a>!</p>
+
+        <ul>
+            <li><a href="logout.php">Log out</a></li>
+        </ul>
+    <?php
+}else{
+    echo '<p>You need to <a href="login.php">log in</a> or <a href="register.php">register</a></p>';
+}
+
+
