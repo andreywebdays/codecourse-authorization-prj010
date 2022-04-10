@@ -32,6 +32,17 @@ class User{
         }
     }
 
+    public function update($fields = array(), $id = null){
+
+        if(!$id && $this->isLoggedIn()){
+            $id = $this->data()->id;
+        }
+
+        if(!$this->_db->update('users', $id, $fields)){
+            throw new Exception('There was a problem updating an account.');
+        }
+    }
+    
     public function create($fields = array()){
         if(!$this->_db->insert('users', $fields)){
             throw new Exception('There was a problem creating an account.');
@@ -52,31 +63,53 @@ class User{
         return false;
     }
 
-    public function login($username = null, $password = null, $remember){
-        $user = $this->find($username);
+    public function login($username = null, $password = null, $remember = false){
         // print_r($this->_data);
 
-        if($user){
-            if(password_verify($password, $this->data()->password)){
-                // echo 'OK!';
-                Session::put($this->_sessionName, $this->data()->id);
+        if(!$username && !$password && $this->exists()){
+            // log user in
+            Session::put($this->_sessionName, $this->data()->id);
+        }else{
+            $user = $this->find($username);
 
-                if($remember){
-                    $hash = Hash::unique();
-                    $hashCheck = $this->_db->get('users_session', array('user_id', '=', $this->data()->id));
+            if($user){
+                if(password_verify($password, $this->data()->password)){
+                    // echo 'OK!';
+                    Session::put($this->_sessionName, $this->data()->id);
 
-                    if(!$hashCheck->count()){
-                        $this->_db->insert('users_session', array(
-                            'user_id' => $this->data()->id,
-                            'hash' => $hash
-                        ));
-                    }else{
-                        $hash = $hashCheck->first()->hash;
+                    if($remember){
+                        $hash = Hash::unique();
+                        $hashCheck = $this->_db->get('users_session', array('user_id', '=', $this->data()->id));
+
+                        if(!$hashCheck->count()){
+                            $this->_db->insert('users_session', array(
+                                'user_id' => $this->data()->id,
+                                'hash' => $hash
+                            ));
+                        }else{
+                            $hash = $hashCheck->first()->hash;
+                        }
+                        
+                        Cookie::put($this->_cookieName, $hash, Config::get('remember/cookie_expiry'));
                     }
-                    
-                    Cookie::put($this->_cookieName, $hash, Config::get('remember/cookie_expiry'));
-                }
 
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function hasPermission($key){
+        $role = $this->_db->get('roles', array('id', '=', $this->data()->role));
+        // print_r($role->first());
+
+        if($role->count()){
+            $permissions = json_decode($role->first()->permissions, true);
+            // print_r($permissions);
+
+            if($permissions[$key] == true){
                 return true;
             }
         }
@@ -84,8 +117,16 @@ class User{
         return false;
     }
 
+    public function exists(){
+        return (!empty($this->_data)) ? true : false;
+    }
+
     public function logout(){
+
+        $this->_db->delete('users_session', array('user_id', '=', $this->data()->id));
+
         Session::delete($this->_sessionName);
+        Cookie::delete($this->_cookieName);
     }
 
     public function data(){
