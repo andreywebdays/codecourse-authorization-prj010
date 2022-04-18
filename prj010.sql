@@ -30,7 +30,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `users` (`id`, `username`, `password`, `name`, `joined`, `role`) VALUES
-(13, 'andrey', '$2y$10$w.5GsPbW7s7a7bSlgWKKKOtvE3D1Gqy8B2kSRgQwVRs5bhfcaacJu', 'Andrey Webdays', '2022-04-10 01:16:23', 2);
+(13, 'andrey', '$2y$10$w.5GsPbW7s7a7bSlgWKKKOtvE3D1Gqy8B2kSRgQwVRs5bhfcaacJu', 'Andrey Webdays', '2016-04-10 01:16:23', 2);
 
 CREATE TABLE `users_session` (
   `id` int(11) NOT NULL,
